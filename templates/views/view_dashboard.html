@@ -1,0 +1,181 @@
+<!-- VIEW: DASHBOARD UTAMA -->
+<div id="view-dashboard" class="dash-page">
+
+  <!-- Header Row: Title + Search -->
+  <div class="dash-header">
+    <div>
+      <div class="dash-eyebrow">
+        <span class="dash-dot"></span>
+        Mesin aktif &mdash; 100% offline
+      </div>
+      <h1 class="dash-title">Konversi Dokumen</h1>
+      <p class="dash-sub">Pilih alat di bawah atau cari berdasarkan nama &amp; format file.</p>
+    </div>
+
+    <div class="dash-search-wrap">
+      <svg class="dash-search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+      <input
+        type="text"
+        id="dashboardSearchInput"
+        oninput="filterDashboardTools(this.value)"
+        placeholder="Cari alat… misal pdf, excel, ocr, gabung"
+        class="dash-search-input"
+        autocomplete="off"
+      />
+    </div>
+  </div>
+
+  <!-- Category Tabs -->
+  <div class="dash-tabs" role="tablist">
+    <button onclick="filterDashboardCategory('all', this)" class="dash-tab active" role="tab">Semua</button>
+    <button onclick="filterDashboardCategory('office', this)" class="dash-tab" role="tab">Dokumen &amp; Kantor</button>
+    <button onclick="filterDashboardCategory('pdf', this)" class="dash-tab" role="tab">Pengelola PDF</button>
+    <button onclick="filterDashboardCategory('media', this)" class="dash-tab" role="tab">Gambar &amp; Media</button>
+  </div>
+
+  <!-- Tool Grid -->
+  <div id="dashboardToolsGrid" class="dash-grid">
+
+    <button onclick="selectTool('htmlToExcel')" data-category="office" data-keywords="html excel xlsx tabel web ekstrak" class="dash-card group">
+      <div class="dash-card-icon" style="background:#eef2ff;color:#4f46e5">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+      </div>
+      <div class="dash-card-body">
+        <div class="dash-card-title">HTML ke Excel</div>
+        <div class="dash-card-desc">Ekstrak tabel &amp; card dari halaman web ke spreadsheet .xlsx</div>
+      </div>
+      <div class="dash-card-format">xlsx</div>
+    </button>
+
+    <button onclick="selectTool('csvToExcel')" data-category="office" data-keywords="csv excel xlsx delimiter koma data" class="dash-card group">
+      <div class="dash-card-icon" style="background:#f0fdf4;color:#16a34a">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+      </div>
+      <div class="dash-card-body">
+        <div class="dash-card-title">CSV ke Excel</div>
+        <div class="dash-card-desc">Auto-detect delimiter koma / titik koma tanpa konfigurasi manual</div>
+      </div>
+      <div class="dash-card-format">xlsx</div>
+    </button>
+
+    <button onclick="selectTool('pdfToWord')" data-category="office" data-keywords="pdf word docx ocr scan sertifikat hybrid konversi" class="dash-card group">
+      <div class="dash-card-icon" style="background:#fff1f2;color:#e11d48">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      </div>
+      <div class="dash-card-body">
+        <div class="dash-card-title">PDF ke Word</div>
+        <div class="dash-card-desc">Mode Standar, AI OCR untuk scan &amp; Hybrid untuk sertifikat</div>
+      </div>
+      <div class="dash-card-format">docx</div>
+    </button>
+
+    <button onclick="selectTool('wordToPdf')" data-category="office" data-keywords="word pdf docx libreoffice margin kop surat cetak" class="dash-card group">
+      <div class="dash-card-icon" style="background:#eff6ff;color:#2563eb">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+      </div>
+      <div class="dash-card-body">
+        <div class="dash-card-title">Word ke PDF</div>
+        <div class="dash-card-desc">Presisi LibreOffice — margin, font &amp; kop surat identik asli</div>
+      </div>
+      <div class="dash-card-format">pdf</div>
+    </button>
+
+    <button onclick="selectTool('pdfToPpt')" data-category="office" data-keywords="pdf ppt pptx powerpoint slide presentasi" class="dash-card group">
+      <div class="dash-card-icon" style="background:#fff7ed;color:#ea580c">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
+      </div>
+      <div class="dash-card-body">
+        <div class="dash-card-title">PDF ke PPT</div>
+        <div class="dash-card-desc">Tiap lembar PDF jadi slide PowerPoint dengan proporsi layar pas</div>
+      </div>
+      <div class="dash-card-format">pptx</div>
+    </button>
+
+    <button onclick="selectTool('mergePdf')" data-category="pdf" data-keywords="gabung pdf merge satukan thumbnail canvas urut" class="dash-card group">
+      <div class="dash-card-icon" style="background:#eef2ff;color:#6366f1">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+      </div>
+      <div class="dash-card-body">
+        <div class="dash-card-title">Gabung PDF</div>
+        <div class="dash-card-desc">Satukan banyak PDF — atur urutan dengan drag &amp; drop thumbnail</div>
+      </div>
+      <div class="dash-card-format">pdf</div>
+    </button>
+
+    <button onclick="selectTool('splitPdf')" data-category="pdf" data-keywords="pisah pdf split potong zip rentang halaman ekstrak" class="dash-card group">
+      <div class="dash-card-icon" style="background:#ecfeff;color:#0891b2">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
+      </div>
+      <div class="dash-card-body">
+        <div class="dash-card-title">Pisah PDF</div>
+        <div class="dash-card-desc">Per lembar ke ZIP atau berdasarkan rentang halaman (misal 1-3, 5)</div>
+      </div>
+      <div class="dash-card-format">zip</div>
+    </button>
+
+    <button onclick="selectTool('pageManager')" data-category="pdf" data-keywords="kelola halaman putar rotate hapus delete visual organizer urut" class="dash-card group">
+      <div class="dash-card-icon" style="background:#fffbeb;color:#d97706">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+      </div>
+      <div class="dash-card-body">
+        <div class="dash-card-title">Kelola Halaman</div>
+        <div class="dash-card-desc">Geser urutan, putar 90°, hapus lembar — semua secara visual</div>
+      </div>
+      <div class="dash-card-format">pdf</div>
+    </button>
+
+    <button onclick="selectTool('compressPdf')" data-category="pdf" data-keywords="kompres pdf kecilkan ukuran mb compress resize optimize" class="dash-card group">
+      <div class="dash-card-icon" style="background:#f0fdf4;color:#15803d">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+      </div>
+      <div class="dash-card-body">
+        <div class="dash-card-title">Kompres PDF</div>
+        <div class="dash-card-desc">Kurangi ukuran file hingga 50–70%, pratinjau MB sebelum unduh</div>
+      </div>
+      <div class="dash-card-format">pdf</div>
+    </button>
+
+    <button onclick="selectTool('pdfToImage')" data-category="media" data-keywords="pdf gambar image png jpg zip foto ekspor" class="dash-card group">
+      <div class="dash-card-icon" style="background:#faf5ff;color:#9333ea">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      </div>
+      <div class="dash-card-body">
+        <div class="dash-card-title">PDF ke Gambar</div>
+        <div class="dash-card-desc">Ekspor tiap lembar PDF ke PNG / JPG &mdash; unduh satuan atau ZIP</div>
+      </div>
+      <div class="dash-card-format">png / jpg</div>
+    </button>
+
+    <button onclick="selectTool('imageToPdf')" data-category="media" data-keywords="gambar image foto jpg png webp ke pdf satukan" class="dash-card group">
+      <div class="dash-card-icon" style="background:#f0fdfa;color:#0d9488">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      </div>
+      <div class="dash-card-body">
+        <div class="dash-card-title">Gambar ke PDF</div>
+        <div class="dash-card-desc">Satukan JPG / PNG / WEBP menjadi satu dokumen PDF sekaligus</div>
+      </div>
+      <div class="dash-card-format">pdf</div>
+    </button>
+
+  </div>
+
+  <!-- Empty state -->
+  <div id="dashEmptySearch" class="dash-empty hidden">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+    </svg>
+    <p>Tidak ada alat yang cocok untuk "<span id="dashEmptyQuery"></span>"</p>
+  </div>
+
+  <!-- Footer hint -->
+  <div class="dash-footer">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4 flex-shrink-0">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+    </svg>
+    Semua proses berjalan di RAM komputer Anda &mdash; tidak ada file yang dikirim ke internet.
+    Model AI OCR: <strong>RapidOCR PP-OCRv4</strong> (offline, ~15 MB).
+  </div>
+
+</div>

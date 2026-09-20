@@ -1,0 +1,25 @@
+<!-- Topbar Navigation -->
+<header class="bg-white border-b border-slate-200 px-4 sm:px-8 py-3 flex items-center justify-between sticky top-0 z-30 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
+  <div class="flex items-center gap-3 min-w-0">
+    <!-- Hamburger button for mobile -->
+    <button id="mobileMenuBtn" onclick="toggleMobileMenu()" type="button" class="md:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-800 border border-slate-300 shadow-sm flex-shrink-0 cursor-pointer focus:outline-none" aria-label="Buka Menu">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </button>
+    <div class="min-w-0">
+      <div class="flex items-center gap-2">
+        <span class="md:hidden inline-block text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-100 px-2 py-0.5 rounded-md">DocPortal</span>
+        <h2 id="currentToolTitle" class="text-sm sm:text-base font-bold text-slate-800 truncate">HTML ke Excel</h2>
+      </div>
+      <p id="currentToolSub" class="text-[11px] sm:text-xs text-slate-400 mt-0.5 truncate hidden sm:block">Ekstrak tabel dan elemen kartu dari kode HTML halaman web</p>
+    </div>
+  </div>
+
+  <div id="fileInfoBadge" class="hidden items-center gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-indigo-50 border border-indigo-100 text-[11px] sm:text-xs font-medium text-indigo-700 max-w-[160px] sm:max-w-xs truncate">
+    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+    </svg>
+    <span id="fileInfoName" class="truncate">Nama File</span>
+  </div>
+</header>

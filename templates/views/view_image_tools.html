@@ -1,0 +1,124 @@
+<!-- VIEW 6: PDF to Image -->
+<div id="view-pdfToImage" class="tool-view hidden">
+  <div class="content-card p-4 sm:p-6 mb-6">
+    <div class="mb-4 pb-3 border-b border-slate-100">
+      <h3 class="text-sm font-bold text-slate-800">Ekspor Halaman PDF ke Gambar</h3>
+      <p class="text-xs text-slate-400 mt-0.5">Ubah lembar PDF menjadi gambar tajam. Pilihan semua halaman akan otomatis dikemas dalam file ZIP yang valid.</p>
+    </div>
+
+    <!-- Responsive Settings Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
+      <!-- Format -->
+      <div>
+        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Format Output</label>
+        <div class="segment-wrap w-full">
+          <button onclick="setImgFormat('png')" id="btnFmt-png" class="segment-btn active flex-1">PNG</button>
+          <button onclick="setImgFormat('jpg')" id="btnFmt-jpg" class="segment-btn flex-1">JPG</button>
+        </div>
+      </div>
+
+      <!-- DPI -->
+      <div>
+        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Kualitas Gambar</label>
+        <div class="segment-wrap w-full">
+          <button onclick="setImgDpi(96)" id="btnDpi-96" class="segment-btn flex-1">96 DPI</button>
+          <button onclick="setImgDpi(150)" id="btnDpi-150" class="segment-btn active flex-1">150 DPI</button>
+          <button onclick="setImgDpi(300)" id="btnDpi-300" class="segment-btn flex-1">300 DPI</button>
+        </div>
+      </div>
+
+      <!-- Pages -->
+      <div>
+        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Cakupan Halaman</label>
+        <div class="segment-wrap w-full">
+          <button onclick="setImgPages('all')" id="btnPages-all" class="segment-btn active flex-1">Semua (ZIP)</button>
+          <button onclick="setImgPages('first')" id="btnPages-first" class="segment-btn flex-1">Hal. 1</button>
+          <button onclick="setImgPages('custom')" id="btnPages-custom" class="segment-btn flex-1">Pilih</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Page Selection Box -->
+    <div id="customPagesBox" class="hidden mb-4 p-3.5 bg-indigo-50/70 rounded-xl border border-indigo-100">
+      <label class="block text-xs font-bold text-slate-800 mb-1">Nomor Halaman yang Ingin Diekstrak:</label>
+      <input type="text" id="customPagesInput" placeholder="Contoh: 1, 3, 5-8 atau 2-4" class="w-full px-3.5 py-2 text-xs font-semibold rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none bg-white text-slate-800">
+      <p class="text-[11px] text-slate-500 mt-1.5 leading-relaxed">
+        💡 <strong>Tips:</strong> Pisahkan dengan koma (contoh: <code>1, 3, 5</code>) atau strip untuk rentang (contoh: <code>2-5</code>). Jika hanya 1 halaman dipilih, akan langsung diunduh sebagai gambar tanpa ZIP!
+      </p>
+    </div>
+
+    <div id="dz-pdfimg" class="dropzone-box p-6 sm:p-10 text-center">
+      <input type="file" id="file-pdfimg" class="hidden" accept=".pdf">
+      <svg class="w-9 h-9 text-slate-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+      </svg>
+      <p class="text-xs font-semibold text-slate-700">Pilih atau seret file PDF ke sini</p>
+      <p class="text-[11px] text-slate-400 mt-0.5">Semua halaman akan diekstrak menjadi gambar tajam</p>
+      <div id="lbl-pdfimg" class="mt-3 hidden inline-block px-3 py-1 bg-purple-50 text-purple-700 rounded-md text-xs font-semibold max-w-full truncate"></div>
+    </div>
+
+    <div id="imgPreviewWrapper" class="hidden mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+      <p class="text-xs font-semibold text-slate-700 mb-2">Pratinjau Hasil (Halaman 1):</p>
+      <div class="max-w-xs overflow-hidden rounded-lg border border-slate-300 shadow-sm">
+        <img id="imgPreviewEl" src="" alt="Pratinjau PDF" class="w-full h-auto">
+      </div>
+    </div>
+
+    <div class="flex justify-end mt-5 pt-4 border-t border-slate-100">
+      <button onclick="handlePdfToImageProcess()" class="btn-primary w-full sm:w-auto" style="background-color: #7c3aed;">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+        </svg>
+        Ekspor Gambar Sekarang
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW 7: Image to PDF -->
+<div id="view-imageToPdf" class="tool-view hidden">
+  <div class="content-card p-4 sm:p-6 mb-6">
+    <div class="mb-4 pb-3 border-b border-slate-100">
+      <div class="flex items-center gap-2 flex-wrap">
+        <h3 class="text-sm font-bold text-slate-800">Konversi Gambar ke Dokumen PDF</h3>
+        <span class="badge badge-teal">Multi-Gambar</span>
+      </div>
+      <p class="text-xs text-slate-400 mt-0.5">Gabungkan foto atau file gambar (JPG, PNG, WEBP) menjadi satu berkas dokumen PDF siap cetak atau arsip.</p>
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-xs font-semibold text-slate-700 mb-1.5">Ukuran Kertas Halaman PDF:</label>
+      <div class="segment-wrap">
+        <button onclick="setImgToPdfPageSize('fit')" id="btnImgPdfSize-fit" class="segment-btn active">Sesuaikan Ukuran Gambar (Fit Asli)</button>
+        <button onclick="setImgToPdfPageSize('a4')" id="btnImgPdfSize-a4" class="segment-btn">Kertas Standar A4</button>
+      </div>
+    </div>
+
+    <div id="dz-imgtopdf" class="dropzone-box p-6 sm:p-10 text-center">
+      <input type="file" id="file-imgtopdf" class="hidden" accept="image/*" multiple>
+      <svg class="w-9 h-9 text-slate-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+      </svg>
+      <p class="text-xs font-semibold text-slate-700">Pilih atau seret gambar ke sini (Bisa pilih banyak)</p>
+      <p class="text-[11px] text-slate-400 mt-0.5">Mendukung file JPG, PNG, WEBP, BMP</p>
+    </div>
+
+    <!-- Selected Images List Container -->
+    <div id="imgFilesContainer" class="hidden mt-4">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-bold text-slate-700">Daftar Gambar (<span id="imgFilesCount">0</span> file):</span>
+        <button onclick="clearImgToPdfFiles()" class="text-xs text-rose-500 hover:text-rose-700 font-medium">Hapus Semua</button>
+      </div>
+      <div id="imgFilesList" class="space-y-2 max-h-56 overflow-y-auto"></div>
+    </div>
+
+    <div class="flex justify-end mt-5 pt-4 border-t border-slate-100">
+      <button onclick="handleImageToPdfProcess()" class="btn-primary w-full sm:w-auto" style="background-color: #0d9488;">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+        </svg>
+        Konversi Jadi PDF (.pdf)
+      </button>
+    </div>
+  </div>
+</div>

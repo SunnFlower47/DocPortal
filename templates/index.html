@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>DocPortal — Portal Konversi Dokumen Internal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css?v=5">
+</head>
+<body class="h-screen flex overflow-hidden bg-slate-50">
+
+  <!-- Components: Backdrop & Toast -->
+  {% include 'components/toast.html' %}
+
+  <!-- Components: Step Loading Modal -->
+  {% include 'components/loading_modal.html' %}
+
+  <!-- Components: Sidebar Drawer -->
+  {% include 'components/sidebar.html' %}
+
+  <!-- Main Application Workspace -->
+  <main class="flex-1 flex flex-col min-w-0 w-full overflow-hidden bg-slate-50">
+    <!-- Components: Header / Topbar -->
+    {% include 'components/header.html' %}
+
+    <!-- Scrollable Body Workspace -->
+    <div class="flex-1 overflow-y-auto p-4 sm:p-8">
+
+      <!-- Alert Notification Box -->
+      <div id="alertBox" class="hidden mb-5 p-4 rounded-xl bg-rose-50 border border-rose-200">
+        <div class="flex items-start gap-3">
+          <svg class="w-5 h-5 text-rose-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+          <div class="flex-1">
+            <h4 id="alertTitle" class="text-xs font-bold text-rose-800">Perhatian</h4>
+            <p id="alertMsg" class="text-xs text-rose-600 mt-0.5"></p>
+          </div>
+          <button onclick="hideAlert()" class="text-rose-400 hover:text-rose-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Views: Modular Feature Templates -->
+      {% include 'views/view_dashboard.html' %}
+      {% include 'views/view_table_tools.html' %}
+      {% include 'views/view_office_tools.html' %}
+      {% include 'views/view_image_tools.html' %}
+      {% include 'views/view_pdf_organizer.html' %}
+      {% include 'views/view_pdf_compress.html' %}
+
+    </div>
+  </main>
+
+  <!-- Offline Local Vendor Libraries -->
+  <script src="/static/vendor/pdf.min.js"></script>
+  <script src="/static/vendor/sortable.min.js"></script>
+
+  <!-- Modular Vanilla JS Services -->
+  <script src="/static/js/services/common.js?v=5"></script>
+  <script src="/static/js/services/navigation.js?v=5"></script>
+  <script src="/static/js/services/table_service.js?v=5"></script>
+  <script src="/static/js/services/office_service.js?v=5"></script>
+  <script src="/static/js/services/image_service.js?v=5"></script>
+  <script src="/static/js/services/pdf_organizer_service.js?v=5"></script>
+  <script src="/static/js/services/pdf_compress_service.js?v=5"></script>
+
+  <!-- Master Application Initializer -->
+  <script src="/static/js/app.js?v=5"></script>
+</body>
+</html>
