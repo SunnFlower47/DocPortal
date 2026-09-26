@@ -60,41 +60,80 @@ body {
   transition: color 0.15s ease-in-out;
 }
 
+/* Sidebar Tag */
+.sidebar-tag {
+  font-size: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 500;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 1.5px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  margin-left: 4px;
+}
+
+.nav-item.active .sidebar-tag {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
 /* Content Card */
 .content-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 14px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03);
 }
 
 /* Dropzone */
 .dropzone-box {
-  border: 2px dashed #cbd5e1;
+  border: 1.5px dashed #cbd5e1;
   border-radius: 12px;
-  background-color: #f8fafc;
-  transition: all 0.2s ease;
+  background-color: #fafbfd;
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
+  position: relative;
 }
 
 .dropzone-box:hover, .dropzone-box.active {
-  border-color: #4f46e5;
-  background-color: #eef2ff;
+  border-color: #6366f1;
+  background-color: #f8faff;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.06);
 }
 
-/* Buttons */
+/* Dropzone Selected File Badge */
+.dropzone-file-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  max-width: 90%;
+  margin-top: 12px;
+  animation: fadeIn 0.15s ease forwards;
+}
+
+/* Unified Buttons */
 .btn-primary {
   background-color: #4f46e5;
   color: #ffffff;
   font-weight: 600;
-  font-size: 13.5px;
-  padding: 10px 20px;
+  font-size: 13px;
+  padding: 9px 18px;
   border-radius: 9px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  border: none;
+  gap: 8px;
+  border: 1px solid transparent;
   cursor: pointer;
   transition: all 0.15s ease;
   box-shadow: 0 1px 2px 0 rgba(79, 70, 229, 0.2);
@@ -103,40 +142,68 @@ body {
 .btn-primary:hover {
   background-color: #4338ca;
   transform: translateY(-0.5px);
-  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.25);
+  box-shadow: 0 4px 10px -2px rgba(79, 70, 229, 0.25);
 }
 
-.btn-green {
-  background-color: #10b981;
-  color: #ffffff;
-  font-weight: 600;
-  font-size: 13.5px;
-  padding: 10px 20px;
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px 0 rgba(79, 70, 229, 0.2);
+}
+
+.btn-secondary {
+  background-color: #ffffff;
+  color: #334155;
+  font-weight: 500;
+  font-size: 13px;
+  padding: 8px 16px;
   border-radius: 9px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
-  border: none;
+  border: 1px solid #cbd5e1;
   cursor: pointer;
   transition: all 0.15s ease;
-  box-shadow: 0 1px 2px 0 rgba(16, 185, 129, 0.2);
 }
 
-.btn-green:hover {
-  background-color: #059669;
+.btn-secondary:hover {
+  background-color: #f8fafc;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+.btn-green, .btn-success {
+  background-color: #16a34a;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 9px 18px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px 0 rgba(22, 163, 74, 0.2);
+}
+
+.btn-green:hover, .btn-success:hover {
+  background-color: #15803d;
   transform: translateY(-0.5px);
-  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 4px 10px -2px rgba(22, 163, 74, 0.25);
 }
 
 /* Option Cards (Radio Mode) */
 .option-card {
-  border: 1.5px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 13px 15px;
   background: #ffffff;
   cursor: pointer;
   transition: all 0.15s ease;
+  position: relative;
 }
 
 .option-card:hover {
@@ -145,8 +212,9 @@ body {
 }
 
 .option-card.selected {
-  border-color: #4f46e5;
-  background: #eef2ff;
+  border-color: #6366f1;
+  background: #fbfbfe;
+  box-shadow: 0 0 0 1px #6366f1, 0 2px 6px -2px rgba(99, 102, 241, 0.12);
 }
 
 /* Segmented Controls */
@@ -476,10 +544,10 @@ body {
   color: #4338ca;
 }
 
-/* Compress Comparison Banner */
+/* Compress Result Box (Clean Minimal) */
 .compress-result-box {
-  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
-  border: 1.5px solid #a7f3d0;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 14px;
 }
 

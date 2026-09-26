@@ -57,6 +57,18 @@ function hideLoading() {
   if (overlay) overlay.classList.remove('show');
 }
 
+// File Size Formatter Utility (Global)
+function formatFileSize(bytes) {
+  if (!bytes || isNaN(bytes) || bytes <= 0) return '0 B';
+  if (bytes >= 1048576) {
+    return (bytes / 1048576).toFixed(2) + ' MB';
+  }
+  if (bytes >= 1024) {
+    return (bytes / 1024).toFixed(1) + ' KB';
+  }
+  return bytes + ' B';
+}
+
 // Toast Controller
 function showToast(msg, isError = false) {
   const toast = document.getElementById('toast');
@@ -152,7 +164,8 @@ function updateFileInfo(inp, lbl) {
   const f = inp.files[0];
   const sizeStr = f.size > 1048576 ? (f.size / 1048576).toFixed(1) + ' MB' : Math.round(f.size / 1024) + ' KB';
   if (lbl) {
-    lbl.textContent = `✓ ${f.name} (${sizeStr})`;
+    lbl.className = 'dropzone-file-badge';
+    lbl.innerHTML = `<svg class="w-3.5 h-3.5 text-indigo-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span class="truncate font-semibold text-slate-800">${f.name}</span><span class="text-slate-400 font-normal">(${sizeStr})</span>`;
     lbl.classList.remove('hidden');
   }
   const badge = document.getElementById('fileInfoBadge');

@@ -13,6 +13,25 @@ document.addEventListener('DOMContentLoaded', () => {
   setupDropzone('dz-splitpdf', 'file-splitpdf', 'lbl-splitpdf');
   setupDropzone('dz-pagemgr', 'file-pagemgr', 'lbl-pagemgr');
   setupDropzone('dz-compresspdf', 'file-compresspdf', 'lbl-compresspdf');
+  setupDropzone('dz-imgcmp', 'file-imgcmp', 'lbl-imgcmp');
+
+  // Preview listener untuk kompres gambar
+  const inpImgCmp = document.getElementById('file-imgcmp');
+  if (inpImgCmp) {
+    inpImgCmp.addEventListener('change', () => {
+      if (inpImgCmp.files && inpImgCmp.files.length > 0) {
+        previewSelectedImageForCompression(inpImgCmp.files[0]);
+      }
+    });
+  }
+  const dzImgCmp = document.getElementById('dz-imgcmp');
+  if (dzImgCmp) {
+    dzImgCmp.addEventListener('drop', (e) => {
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        previewSelectedImageForCompression(e.dataTransfer.files[0]);
+      }
+    });
+  }
 
   // 2. Inisialisasi Multi-file Dropzones
   setupMultiFileDropzone('dz-imgtopdf', 'file-imgtopdf', addImageToPdfFiles);

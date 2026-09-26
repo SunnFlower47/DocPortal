@@ -22,7 +22,7 @@ if %errorlevel% neq 0 (
 )
 
 :: 2. Cek dependensi modul Python
-python -c "import flask, bs4, pandas, openpyxl, pdf2docx, mammoth, xhtml2pdf, rapidocr_onnxruntime, pymupdf, PIL, pptx" >nul 2>&1
+python -c "import flask, bs4, pandas, openpyxl, mammoth, xhtml2pdf, pymupdf, PIL, pptx" >nul 2>&1
 if %errorlevel% neq 0 (
     echo [INFO] Menginstall library Python yang dibutuhkan...
     pip install -r requirements.txt

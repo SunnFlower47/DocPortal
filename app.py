@@ -22,6 +22,7 @@ from services.doc_converter import (
     compress_pdf,
     convert_image_to_pdf,
     convert_pdf_to_ppt,
+    compress_image,
 )
 
 app = Flask(__name__)
@@ -444,6 +445,59 @@ def api_pdf_to_ppt():
         return resp
     except Exception as e:
         return jsonify({'error_title': 'Gagal Konversi PDF ke PowerPoint', 'error': str(e)}), 500
+
+# -------------------------------------------------------------
+# 15. API: KOMPRES GAMBAR (JPG / PNG / WEBP / BMP / GIF)
+# -------------------------------------------------------------
+@app.route('/api/image/compress', methods=['POST'])
+def api_image_compress():
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error_title': 'File Kosong', 'error': 'Silakan pilih file gambar.'}), 400
+        f = request.files['file']
+        if not f.filename:
+            return jsonify({'error_title': 'File Kosong', 'error': 'Silakan pilih file gambar.'}), 400
+
+        valid_exts = ('.jpg', '.jpeg', '.png', '.webp', '.bmp', '.gif', '.tiff', '.tif')
+        if not f.filename.lower().endswith(valid_exts):
+            return jsonify({'error_title': 'Format Tidak Didukung',
+                            'error': 'Format yang didukung: JPG, PNG, WEBP, BMP, GIF, TIFF.'}), 400
+
+        quality     = int(request.form.get('quality', 70))
+        quality     = max(10, min(95, quality))
+        out_format  = request.form.get('output_format', None) or None
+        max_width   = request.form.get('max_width',  None)
+        max_height  = request.form.get('max_height', None)
+        max_width   = int(max_width)  if max_width  else None
+        max_height  = int(max_height) if max_height else None
+
+        base_name = os.path.splitext(f.filename)[0]
+        out_stream, ext_out, mime, orig_size, new_size, saved_pct = compress_image(
+            f, f.filename,
+            quality=quality,
+            output_format=out_format,
+            max_width=max_width,
+            max_height=max_height,
+        )
+
+        suffix = '_terkompresi' if not out_format else f'_ke-{ext_out}'
+        dl_name = f"{base_name}{suffix}.{ext_out}"
+
+        resp = send_file(
+            out_stream,
+            as_attachment=True,
+            download_name=dl_name,
+            mimetype=mime,
+        )
+        resp.headers["X-Saved-Percent"]  = str(saved_pct)
+        resp.headers["X-Original-Size"]  = str(orig_size)
+        resp.headers["X-Compressed-Size"] = str(new_size)
+        resp.headers["Access-Control-Expose-Headers"] = (
+            "Content-Disposition, X-Saved-Percent, X-Original-Size, X-Compressed-Size"
+        )
+        return resp
+    except Exception as e:
+        return jsonify({'error_title': 'Gagal Kompres Gambar', 'error': str(e)}), 500
 
 # -------------------------------------------------------------
 # RUNNER SERVER

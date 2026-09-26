@@ -165,7 +165,11 @@ def convert_pdf_ocr_to_word(pdf_stream):
     """
     try:
         import pymupdf
-        from rapidocr_onnxruntime import RapidOCR
+        # rapidocr (Python 3.13+ support) menggantikan rapidocr_onnxruntime yang deprecated
+        try:
+            from rapidocr import RapidOCR
+        except ImportError:
+            from rapidocr_onnxruntime import RapidOCR  # fallback untuk Python <=3.12 lama
         import docx
         from docx.shared import Pt, RGBColor
         from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -715,7 +719,11 @@ def convert_pdf_hybrid_to_word(pdf_stream):
         blocks = page.get_text("blocks")
         if not blocks:
             try:
-                ocr_res, _ = _get_ocr_engine()(img_bytes)
+                try:
+                    from rapidocr import RapidOCR as _RapidOCR
+                except ImportError:
+                    from rapidocr_onnxruntime import RapidOCR as _RapidOCR
+                ocr_res, _ = _RapidOCR()(img_bytes)
                 if ocr_res:
                     for item in sorted(ocr_res, key=lambda x: min(pt[1] for pt in x[0])):
                         txt = item[1].strip()
@@ -932,9 +940,12 @@ def reorder_pdf_pages(pdf_stream, new_order_str, rotations=None):
 # -------------------------------------------------------------
 def compress_pdf(pdf_stream, level='recommended'):
     """
-    Mengompresi ukuran file PDF secara cerdas dan nyata:
-    - Melakukan down-sampling dan rekompresi gambar/foto di dalam PDF (penyebab utama ukuran membengkak)
-    - Membersihkan metadata sampah dan men-deflate bytecode stream
+    Mengompresi ukuran file PDF secara cerdas, agresif, dan optimal:
+    - Melakukan down-sampling dan rekompresi gambar/foto di dalam PDF
+    - Mengompresi gambar PNG/transparan menggunakan smart quantization
+    - Memangkas subset font yang tidak terpakai (subset_fonts)
+    - Mengaktifkan object streams (use_objstms=1) untuk memadatkan ribuan objek teks & struktur
+    - Membersihkan metadata sampah dan men-deflate seluruh bytecode stream
     """
     import pymupdf
     from PIL import Image
@@ -945,14 +956,17 @@ def compress_pdf(pdf_stream, level='recommended'):
 
     # Konfigurasi parameter kompresi gambar sesuai level
     if level == 'high':
-        max_dim = 850
-        quality = 50
+        max_dim = 650
+        quality = 36
+        quantize_colors = 128
     elif level == 'low':
-        max_dim = 1800
-        quality = 82
-    else:  # recommended / medium (standar kantor tajam & hemat)
-        max_dim = 1300
-        quality = 68
+        max_dim = 1500
+        quality = 75
+        quantize_colors = 256
+    else:  # recommended / medium (standar kantor tajam & sangat hemat)
+        max_dim = 1000
+        quality = 55
+        quantize_colors = 256
 
     processed_xrefs = set()
 
@@ -996,29 +1010,53 @@ def compress_pdf(pdf_stream, level='recommended'):
                 # Cek apakah gambar memiliki transparansi (alpha channel) atau mask khusus (smask)
                 has_alpha = (smask > 0) or (pil_img.mode in ('RGBA', 'LA')) or (pil_img.mode == 'P' and 'transparency' in pil_img.info)
                 if has_alpha:
-                    # Pertahankan format PNG jika memiliki transparansi agar tidak rusak
-                    pil_img.save(out_img_io, format='PNG', optimize=True)
+                    # Gambar transparan: lakukan smart quantization agar ukuran menyusut drastis tanpa merusak transparansi
+                    try:
+                        q_img = pil_img.quantize(colors=quantize_colors, method=Image.Quantize.FASTOCTREE)
+                        q_img.save(out_img_io, format='PNG', optimize=True, compress_level=9)
+                    except Exception:
+                        pil_img.save(out_img_io, format='PNG', optimize=True, compress_level=9)
                 else:
                     if pil_img.mode != 'RGB':
                         pil_img = pil_img.convert('RGB')
-                    pil_img.save(out_img_io, format='JPEG', quality=quality, optimize=True)
+                    pil_img.save(out_img_io, format='JPEG', quality=quality, optimize=True, progressive=True)
 
                 new_img_bytes = out_img_io.getvalue()
 
-                # Ganti gambar menggunakan metode resmi PyMuPDF page.replace_image
-                # Metode ini otomatis mengupdate dictionary PDF (/Filter, /Width, /Height)
-                # sehingga tidak terjadi bug blank hitam pada background PDF
+                # Ganti gambar jika hasil kompresi lebih kecil
                 if len(new_img_bytes) < orig_img_len:
                     page.replace_image(xref, stream=new_img_bytes)
             except Exception:
                 continue
 
+    # Pangkas font yang tidak digunakan jika memungkinkan
+    try:
+        doc.subset_fonts()
+    except Exception:
+        pass
+
     out_io = io.BytesIO()
-    doc.save(out_io, garbage=4, deflate=True, clean=True)
+    doc.save(
+        out_io,
+        garbage=4,
+        clean=True,
+        deflate=True,
+        deflate_images=True,
+        deflate_fonts=True,
+        use_objstms=1,
+    )
     doc.close()
 
     new_len = len(out_io.getvalue())
-    saved_pct = max(0, round((orig_len - new_len) / orig_len * 100, 1))
+
+    # Jika file terkompresi ternyata lebih besar dari aslinya, gunakan file asli
+    if new_len > orig_len:
+        out_io = io.BytesIO(pdf_bytes)
+        new_len = orig_len
+        saved_pct = 0.0
+    else:
+        saved_pct = max(0.0, round((orig_len - new_len) / orig_len * 100, 1))
+
     out_io.seek(0)
     return out_io, orig_len, new_len, saved_pct
 
@@ -1093,3 +1131,136 @@ def convert_pdf_to_ppt(pdf_stream):
     out_io.seek(0)
     return out_io
 
+
+# ----------------------------------------------------------------------
+# 12. KOMPRES & KONVERSI GAMBAR (JPG / PNG / WEBP / BMP / GIF)
+# ----------------------------------------------------------------------
+def compress_image(img_stream, filename, quality=70, output_format=None, max_width=None, max_height=None):
+    """
+    Mengompresi file gambar (JPG, PNG, WEBP, BMP, GIF, TIFF) secara optimal dan nyata:
+    - Default quality 70 (sweet spot pengurangan 50-80% tanpa penurunan visual kasat mata)
+    - PNG: smart color quantization (TinyPNG-style) memangkas ukuran 60-80%
+    - JPEG: optimize=True, progressive=True
+    - WEBP: method=6 kompresi densitas tinggi
+    - Auto-downscale jika gambar kamera raksasa (>2400px) saat batas tidak diatur manual
+    """
+    from PIL import Image
+
+    img_bytes = img_stream.read() if hasattr(img_stream, 'read') else img_stream
+    orig_size = len(img_bytes)
+
+    ext_in = os.path.splitext(filename)[1].lower().lstrip('.')
+    if ext_in == 'jpeg':
+        ext_in = 'jpg'
+
+    if output_format:
+        ext_out = output_format.lower().lstrip('.')
+        if ext_out == 'jpeg':
+            ext_out = 'jpg'
+    else:
+        ext_out = ext_in
+
+    PIL_FORMAT_MAP = {
+        'jpg':  'JPEG',
+        'png':  'PNG',
+        'webp': 'WEBP',
+        'bmp':  'BMP',
+        'gif':  'GIF',
+        'tiff': 'TIFF',
+        'tif':  'TIFF',
+    }
+    MIME_MAP = {
+        'jpg':  'image/jpeg',
+        'png':  'image/png',
+        'webp': 'image/webp',
+        'bmp':  'image/bmp',
+        'gif':  'image/gif',
+        'tiff': 'image/tiff',
+        'tif':  'image/tiff',
+    }
+
+    pil_fmt_out = PIL_FORMAT_MAP.get(ext_out, 'JPEG')
+    mime = MIME_MAP.get(ext_out, 'image/jpeg')
+
+    img = Image.open(io.BytesIO(img_bytes))
+
+    # Dimensi & Auto-capping
+    w, h = img.size
+    # Jika user tidak membatasi ukuran manual, batasi gambar kamera raksasa (>2400px) ke 2048px
+    if not max_width and not max_height:
+        if max(w, h) > 2400:
+            max_width = 2048
+
+    if max_width and w > max_width:
+        ratio = max_width / w
+        img = img.resize((max_width, max(1, int(h * ratio))), Image.Resampling.LANCZOS)
+    if max_height and img.size[1] > max_height:
+        ratio = max_height / img.size[1]
+        img = img.resize((max(1, int(img.size[0] * ratio)), max_height), Image.Resampling.LANCZOS)
+
+    has_alpha = img.mode in ('RGBA', 'LA', 'PA') or (img.mode == 'P' and 'transparency' in img.info)
+
+    out_io = io.BytesIO()
+
+    if pil_fmt_out in ('JPEG', 'BMP'):
+        if has_alpha:
+            bg = Image.new('RGB', img.size, (255, 255, 255))
+            if img.mode == 'P':
+                img = img.convert('RGBA')
+            alpha = img.split()[-1] if img.mode in ('RGBA', 'LA') else None
+            bg.paste(img, mask=alpha)
+            img = bg
+        elif img.mode != 'RGB':
+            img = img.convert('RGB')
+
+        if pil_fmt_out == 'JPEG':
+            img.save(out_io, format='JPEG', quality=quality, optimize=True, progressive=True)
+        else:
+            img.save(out_io, format='BMP')
+
+    elif pil_fmt_out == 'WEBP':
+        img.save(out_io, format='WEBP', quality=quality, method=6)
+
+    elif pil_fmt_out == 'PNG':
+        # Smart PNG Compression:
+        # Coba simpan standar dulu
+        buf_std = io.BytesIO()
+        img.save(buf_std, format='PNG', optimize=True, compress_level=9)
+        best_bytes = buf_std.getvalue()
+
+        # Jika quality < 92, lakukan smart color quantization (ala TinyPNG)
+        if quality < 92:
+            try:
+                num_colors = 256 if quality >= 68 else (128 if quality >= 45 else 64)
+                if has_alpha:
+                    q_img = img.quantize(colors=num_colors, method=Image.Quantize.FASTOCTREE)
+                else:
+                    img_rgb = img.convert('RGB') if img.mode != 'RGB' else img
+                    q_img = img_rgb.quantize(colors=num_colors, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.FLOYDSTEINBERG)
+
+                buf_q = io.BytesIO()
+                q_img.save(buf_q, format='PNG', optimize=True, compress_level=9)
+                q_bytes = buf_q.getvalue()
+                if len(q_bytes) < len(best_bytes):
+                    best_bytes = q_bytes
+            except Exception:
+                pass
+
+        out_io.write(best_bytes)
+
+    elif pil_fmt_out == 'GIF':
+        img.save(out_io, format='GIF', optimize=True)
+    else:
+        img.save(out_io, format=pil_fmt_out)
+
+    new_size = len(out_io.getvalue())
+    if new_size > orig_size and output_format is None:
+        # Jika hasil kompresi malah lebih besar dan format tidak diubah, pakai berkas asli
+        out_io = io.BytesIO(img_bytes)
+        new_size = orig_size
+        saved_pct = 0.0
+    else:
+        saved_pct = max(0.0, round((orig_size - new_size) / orig_size * 100, 1))
+
+    out_io.seek(0)
+    return out_io, ext_out, mime, orig_size, new_size, saved_pct

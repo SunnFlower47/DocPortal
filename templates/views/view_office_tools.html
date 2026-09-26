@@ -1,59 +1,67 @@
 <!-- VIEW 3: PDF to Word -->
 <div id="view-pdfToWord" class="tool-view hidden">
-  <div class="content-card p-4 sm:p-6 mb-6">
-    <div class="mb-4 pb-3 border-b border-slate-100">
-      <h3 class="text-sm font-bold text-slate-800">Konversi Dokumen PDF ke Word (.docx)</h3>
-      <p class="text-xs text-slate-400">Pilih mode konversi sesuai jenis PDF Anda (digital atau hasil scan gambar)</p>
+  <div class="content-card p-5 sm:p-7 mb-6">
+    <div class="mb-5 pb-4 border-b border-slate-100">
+      <h3 class="text-sm font-semibold text-slate-900">Konversi Dokumen PDF ke Word (.docx)</h3>
+      <p class="text-xs text-slate-500 mt-0.5">Pilih mode rekonstruksi dokumen sesuai karakteristik file PDF Anda</p>
     </div>
 
     <!-- Mode Selector Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
       <div onclick="setPdfMode('standard')" id="card-pdf-standard" class="option-card selected">
-        <div class="flex items-center justify-between mb-1">
+        <div class="flex items-center justify-between mb-1.5">
           <div class="flex items-center gap-2">
             <input type="radio" name="pdfMode" value="standard" checked class="accent-indigo-600">
-            <span class="text-xs font-bold text-slate-800">Mode Standar</span>
+            <span class="text-xs font-semibold text-slate-800">Mode Standar</span>
           </div>
-          <span class="badge badge-emerald">Digital</span>
+          <span class="text-[10px] font-medium text-slate-400">Digital</span>
         </div>
-        <p class="text-[11px] text-slate-500 pl-5">Untuk dokumen PDF digital biasa. Menjaga gambar, logo, tabel, list & ukuran kertas asli.</p>
+        <p class="text-[11px] text-slate-500 pl-5 leading-relaxed">Untuk dokumen digital. Menjaga gambar, logo, tabel, list &amp; tata letak kertas asli.</p>
       </div>
 
       <div onclick="setPdfMode('ocr')" id="card-pdf-ocr" class="option-card">
-        <div class="flex items-center justify-between mb-1">
+        <div class="flex items-center justify-between mb-1.5">
           <div class="flex items-center gap-2">
             <input type="radio" name="pdfMode" value="ocr" class="accent-indigo-600">
-            <span class="text-xs font-bold text-slate-800">Mode AI OCR</span>
+            <span class="text-xs font-semibold text-slate-800">Mode AI OCR</span>
           </div>
-          <span class="badge badge-amber">Scan / Foto</span>
+          <span class="text-[10px] font-medium text-slate-400">Scan / Foto</span>
         </div>
-        <p class="text-[11px] text-slate-500 pl-5">Untuk PDF hasil foto / scanner. Mengekstrak teks visual offline secara akurat.</p>
+        <p class="text-[11px] text-slate-500 pl-5 leading-relaxed">Untuk PDF hasil scan printer atau foto kamera. Mengenali teks visual secara offline.</p>
       </div>
 
       <div onclick="setPdfMode('hybrid')" id="card-pdf-hybrid" class="option-card">
-        <div class="flex items-center justify-between mb-1">
+        <div class="flex items-center justify-between mb-1.5">
           <div class="flex items-center gap-2">
             <input type="radio" name="pdfMode" value="hybrid" class="accent-indigo-600">
-            <span class="text-xs font-bold text-slate-800">Mode Hybrid</span>
+            <span class="text-xs font-semibold text-slate-800">Mode Hybrid</span>
           </div>
-          <span class="badge badge-purple">Anti Kotak Hitam</span>
+          <span class="text-[10px] font-medium text-slate-400">Sertifikat</span>
         </div>
-        <p class="text-[11px] text-slate-500 pl-5">Solusi sertifikat & piagam bergradasi tebal. Visual latar 100% utuh tanpa kotak hitam, teks tetap dapat diedit.</p>
+        <p class="text-[11px] text-slate-500 pl-5 leading-relaxed">Khusus sertifikat &amp; piagam berlatar gradasi. Visual utuh bebas kotak hitam, teks tetap editable.</p>
       </div>
     </div>
 
-    <div id="dz-pdf" class="dropzone-box p-6 sm:p-10 text-center">
+    <div id="dz-pdf" class="dropzone-box p-8 sm:p-10 text-center">
       <input type="file" id="file-pdf" class="hidden" accept=".pdf">
-      <svg class="w-9 h-9 text-slate-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-      </svg>
-      <p class="text-xs font-semibold text-slate-700">Pilih atau seret file PDF ke sini</p>
-      <p class="text-[11px] text-slate-400 mt-0.5">Ukuran maksimal file: 100 MB</p>
-      <div id="lbl-pdf" class="mt-3 hidden inline-block px-3 py-1 bg-rose-50 text-rose-700 rounded-md text-xs font-semibold max-w-full truncate"></div>
+      <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center mx-auto mb-2.5">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+        </svg>
+      </div>
+      <p class="text-xs font-semibold text-slate-800">Pilih atau seret file PDF ke sini</p>
+      <p class="text-[11px] text-slate-400 mt-1">Mendukung file .pdf &bull; Maksimal 100 MB</p>
+      <div id="lbl-pdf" class="mt-3 hidden inline-block"></div>
     </div>
 
-    <div class="flex justify-end mt-5 pt-4 border-t border-slate-100">
-      <button onclick="handlePdfToWordProcess()" class="btn-primary w-full sm:w-auto" style="background-color: #e11d48;">
+    <div class="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-3 mt-6 pt-5 border-t border-slate-100">
+      <div class="text-[11px] text-slate-400 flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+        <span>100% Offline &bull; Model AI OCR lokal PP-OCRv4</span>
+      </div>
+      <button onclick="handlePdfToWordProcess()" class="btn-primary w-full sm:w-auto">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
         </svg>
@@ -65,27 +73,32 @@
 
 <!-- VIEW 4: Word to PDF -->
 <div id="view-wordToPdf" class="tool-view hidden">
-  <div class="content-card p-4 sm:p-6 mb-6">
-    <div class="mb-4 pb-3 border-b border-slate-100">
-      <div class="flex items-center gap-2 flex-wrap">
-        <h3 class="text-sm font-bold text-slate-800">Konversi Word (.docx) ke PDF</h3>
-        <span class="badge badge-blue">Native 100% Identik</span>
-      </div>
-      <p class="text-xs text-slate-400 mt-0.5">Engine LibreOffice lokal — ukuran kertas (A4, F4, Letter), margin, kop surat gambar, dan bingkai halaman dijamin persis seperti aslinya.</p>
+  <div class="content-card p-5 sm:p-7 mb-6">
+    <div class="mb-5 pb-4 border-b border-slate-100">
+      <h3 class="text-sm font-semibold text-slate-900">Konversi Dokumen Word ke PDF</h3>
+      <p class="text-xs text-slate-500 mt-0.5">Presisi LibreOffice lokal — ukuran kertas (A4, F4, Letter), margin, kop surat &amp; font 100% identik asli</p>
     </div>
 
-    <div id="dz-word" class="dropzone-box p-6 sm:p-10 text-center">
+    <div id="dz-word" class="dropzone-box p-8 sm:p-10 text-center">
       <input type="file" id="file-word" class="hidden" accept=".docx">
-      <svg class="w-9 h-9 text-slate-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-      </svg>
-      <p class="text-xs font-semibold text-slate-700">Pilih atau seret dokumen Word (.docx) ke sini</p>
-      <p class="text-[11px] text-slate-400 mt-0.5">Format dokumen yang didukung: .docx</p>
-      <div id="lbl-word" class="mt-3 hidden inline-block px-3 py-1 bg-blue-50 text-blue-700 rounded-md text-xs font-semibold max-w-full truncate"></div>
+      <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center mx-auto mb-2.5">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+      </div>
+      <p class="text-xs font-semibold text-slate-800">Pilih atau seret dokumen Word (.docx) ke sini</p>
+      <p class="text-[11px] text-slate-400 mt-1">Mendukung format Microsoft Word .docx &bull; Maksimal 100 MB</p>
+      <div id="lbl-word" class="mt-3 hidden inline-block"></div>
     </div>
 
-    <div class="flex justify-end mt-5 pt-4 border-t border-slate-100">
-      <button onclick="handleWordToPdfProcess()" class="btn-primary w-full sm:w-auto" style="background-color: #2563eb;">
+    <div class="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-3 mt-6 pt-5 border-t border-slate-100">
+      <div class="text-[11px] text-slate-400 flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+        <span>100% Offline &bull; Dikonversi dengan LibreOffice Engine</span>
+      </div>
+      <button onclick="handleWordToPdfProcess()" class="btn-primary w-full sm:w-auto">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
         </svg>
@@ -97,27 +110,32 @@
 
 <!-- VIEW 5: PDF to PPT -->
 <div id="view-pdfToPpt" class="tool-view hidden">
-  <div class="content-card p-4 sm:p-6 mb-6">
-    <div class="mb-4 pb-3 border-b border-slate-100">
-      <div class="flex items-center gap-2 flex-wrap">
-        <h3 class="text-sm font-bold text-slate-800">Konversi Dokumen PDF ke PowerPoint (.pptx)</h3>
-        <span class="badge badge-orange">Slide Presentasi</span>
-      </div>
-      <p class="text-xs text-slate-400 mt-0.5">Ubah setiap lembar PDF menjadi slide presentasi Microsoft PowerPoint (.pptx) yang tajam, proporsional, dan siap dipresentasikan.</p>
+  <div class="content-card p-5 sm:p-7 mb-6">
+    <div class="mb-5 pb-4 border-b border-slate-100">
+      <h3 class="text-sm font-semibold text-slate-900">Konversi Dokumen PDF ke PowerPoint (.pptx)</h3>
+      <p class="text-xs text-slate-500 mt-0.5">Ubah setiap lembar PDF menjadi slide presentasi Microsoft PowerPoint yang proporsional dan siap ditayangkan</p>
     </div>
 
-    <div id="dz-pdfppt" class="dropzone-box p-6 sm:p-10 text-center">
+    <div id="dz-pdfppt" class="dropzone-box p-8 sm:p-10 text-center">
       <input type="file" id="file-pdfppt" class="hidden" accept=".pdf">
-      <svg class="w-9 h-9 text-slate-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
-      </svg>
-      <p class="text-xs font-semibold text-slate-700">Pilih atau seret file PDF ke sini</p>
-      <p class="text-[11px] text-slate-400 mt-0.5">Format file yang didukung: .pdf</p>
-      <div id="lbl-pdfppt" class="mt-3 hidden inline-block px-3 py-1 bg-orange-50 text-orange-700 rounded-md text-xs font-semibold max-w-full truncate"></div>
+      <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center mx-auto mb-2.5">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+        </svg>
+      </div>
+      <p class="text-xs font-semibold text-slate-800">Pilih atau seret file PDF ke sini</p>
+      <p class="text-[11px] text-slate-400 mt-1">Mendukung format file .pdf &bull; Maksimal 100 MB</p>
+      <div id="lbl-pdfppt" class="mt-3 hidden inline-block"></div>
     </div>
 
-    <div class="flex justify-end mt-5 pt-4 border-t border-slate-100">
-      <button onclick="handlePdfToPptProcess()" class="btn-primary w-full sm:w-auto" style="background-color: #ea580c;">
+    <div class="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-3 mt-6 pt-5 border-t border-slate-100">
+      <div class="text-[11px] text-slate-400 flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+        <span>100% Offline &bull; Rasio layar slide dihitung otomatis</span>
+      </div>
+      <button onclick="handlePdfToPptProcess()" class="btn-primary w-full sm:w-auto">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
         </svg>

@@ -16,7 +16,8 @@ const TOOL_META = {
   mergePdf:    { title: 'Gabung PDF',    sub: 'Gabungkan beberapa file dokumen PDF menjadi satu file utuh' },
   splitPdf:    { title: 'Pisah PDF',     sub: 'Pisah dokumen PDF per lembar ke ZIP atau berdasarkan rentang halaman' },
   pageManager: { title: 'Kelola Halaman PDF', sub: 'Hapus, ekstrak, atau atur ulang urutan lembar halaman PDF' },
-  compressPdf: { title: 'Kompres PDF',   sub: 'Kecilkan ukuran file dokumen PDF tanpa merusak struktur dan teks' }
+  compressPdf: { title: 'Kompres PDF',   sub: 'Kecilkan ukuran file dokumen PDF tanpa merusak struktur dan teks' },
+  compressImage: { title: 'Kompres Gambar', sub: 'Kecilkan ukuran file JPG, PNG, WEBP, BMP — atur kualitas dan resize dimensi' }
 };
 
 function selectTool(key) {

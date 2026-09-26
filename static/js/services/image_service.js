@@ -210,3 +210,166 @@ async function handleImageToPdfProcess() {
     showAlert('Kesalahan Jaringan', String(err));
   }
 }
+
+// ============================================================
+// Feature: Image Compression (Kompres Gambar)
+// ============================================================
+let currentCompressedImageBlob = null;
+let currentCompressedImageName = 'gambar_terkompresi.jpg';
+
+function onQualitySliderInput(val) {
+  const label = document.getElementById('imgCmpQualityVal');
+  const desc = document.getElementById('imgCmpQualityDesc');
+  const v = parseInt(val, 10);
+  if (label) label.textContent = v + '%';
+  if (desc) {
+    if (v < 55) {
+      desc.textContent = '(Kompresi Kuat / Hemat Ukuran)';
+    } else if (v <= 75) {
+      desc.textContent = '(Seimbang / Rekomendasi)';
+    } else {
+      desc.textContent = '(Kompresi Ringan / Kualitas Tinggi)';
+    }
+  }
+}
+
+function setImgQualityPreset(val) {
+  const slider = document.getElementById('imgCmpQuality');
+  if (slider) slider.value = val;
+  onQualitySliderInput(val);
+}
+
+function toggleImgCmpResize() {
+  const box = document.getElementById('imgCmpResizeBox');
+  const icon = document.getElementById('iconToggleResize');
+  if (!box) return;
+  const isHidden = box.classList.contains('hidden');
+  box.classList.toggle('hidden', !isHidden);
+  if (icon) {
+    icon.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+  }
+}
+
+function previewSelectedImageForCompression(file) {
+  if (!file) return;
+  const wrap = document.getElementById('imgcmpPreviewWrapper');
+  const imgEl = document.getElementById('imgcmpPreview');
+  const infoEl = document.getElementById('imgcmpOrigInfo');
+  const resPanel = document.getElementById('imgcmpResultPanel');
+
+  if (resPanel) resPanel.classList.add('hidden');
+  currentCompressedImageBlob = null;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    if (imgEl) imgEl.src = e.target.result;
+    if (wrap) wrap.classList.remove('hidden');
+
+    const imgObj = new Image();
+    imgObj.onload = () => {
+      const sizeStr = formatFileSize(file.size);
+      if (infoEl) {
+        infoEl.textContent = `${file.name} — ${imgObj.width} × ${imgObj.height} px (${sizeStr})`;
+      }
+    };
+    imgObj.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function compressImageFile() {
+  hideAlert();
+  const fileInput = document.getElementById('file-imgcmp');
+  if (!fileInput || !fileInput.files || !fileInput.files.length) {
+    showAlert('File Belum Dipilih', 'Silakan pilih gambar (JPG, PNG, WEBP, BMP, GIF) terlebih dahulu.');
+    return;
+  }
+
+  const file = fileInput.files[0];
+  const quality = document.getElementById('imgCmpQuality')?.value || '82';
+  const outFormat = document.getElementById('imgCmpFormat')?.value || '';
+  const maxW = document.getElementById('imgCmpMaxW')?.value || '';
+  const maxH = document.getElementById('imgCmpMaxH')?.value || '';
+
+  showLoading([
+    'Membaca gambar asli...',
+    'Mengoptimalkan pixel & kompresi...',
+    'Menyusun file hasil kompresi...'
+  ]);
+
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('quality', quality);
+  if (outFormat) fd.append('output_format', outFormat);
+  if (maxW) fd.append('max_width', maxW);
+  if (maxH) fd.append('max_height', maxH);
+
+  try {
+    setStep(2);
+    const res = await fetch('/api/image/compress', {
+      method: 'POST',
+      body: fd
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      hideLoading();
+      showAlert(err.error_title || 'Gagal Kompres', err.error || 'Terjadi kesalahan saat memproses gambar.');
+      return;
+    }
+
+    setStep(3);
+    const savedPct = parseFloat(res.headers.get('X-Saved-Percent') || '0');
+    const origSize = parseInt(res.headers.get('X-Original-Size') || String(file.size));
+    const compSize = parseInt(res.headers.get('X-Compressed-Size') || '0');
+
+    // Extract filename from Content-Disposition header
+    const disp = res.headers.get('Content-Disposition') || '';
+    let dlName = `${file.name.split('.')[0]}_terkompresi.jpg`;
+    const fnMatch = disp.match(/filename\*?=(?:UTF-8'')?["']?([^"';]+)["']?/i);
+    if (fnMatch && fnMatch[1]) {
+      dlName = decodeURIComponent(fnMatch[1]);
+    }
+
+    currentCompressedImageBlob = await res.blob();
+    currentCompressedImageName = dlName;
+
+    hideLoading();
+
+    // Show result panel
+    const panel = document.getElementById('imgcmpResultPanel');
+    const badge = document.getElementById('imgcmpSavedBadge');
+    const sizeBefore = document.getElementById('imgcmpSizeBefore');
+    const sizeAfter = document.getElementById('imgcmpSizeAfter');
+    const barAfter = document.getElementById('imgcmpBarAfter');
+
+    if (panel) panel.classList.remove('hidden');
+    if (badge) {
+      badge.textContent = savedPct > 0 ? `Hemat ${savedPct}%` : 'Ukuran Optimal';
+      badge.className = savedPct > 0
+        ? 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700'
+        : 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600';
+    }
+    if (sizeBefore) sizeBefore.textContent = formatFileSize(origSize);
+    if (sizeAfter) sizeAfter.textContent = formatFileSize(compSize);
+
+    if (barAfter && origSize > 0) {
+      const pctWidth = Math.min(100, Math.max(5, Math.round((compSize / origSize) * 100)));
+      barAfter.style.width = pctWidth + '%';
+    }
+
+    showToast('Gambar berhasil dikompresi!');
+    panel?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } catch (err) {
+    hideLoading();
+    showAlert('Kesalahan Jaringan', String(err));
+  }
+}
+
+function downloadCompressedImage() {
+  if (!currentCompressedImageBlob) {
+    showAlert('Belum Ada Hasil', 'Silakan jalankan proses kompresi terlebih dahulu.');
+    return;
+  }
+  triggerBlobDownload(currentCompressedImageBlob, currentCompressedImageName);
+}
